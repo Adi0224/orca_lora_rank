@@ -16,7 +16,7 @@ request_disk            = 40 GB
 
 transfer_input_files    = venv.tar.gz,code.tar.gz
 
-environment             = "METHOD=$(method) LORA_RANK=$(rank) SEED=$(seed) EMBED_EP=45 LORA_EPOCHS=10 TEST_SAMPLES=0 OUTPUT_TARBALL=orca_$(method)_r$(rank)_s$(seed)_$(Cluster)_$(Process).tar.gz"
+environment             = "METHOD=$(method) LORA_RANK=$(rank) SEED=$(seed) EMBED_EP=45 LORA_EPOCHS=10 TEST_SAMPLES=500 HARD_TRAIN_SAMPLES=99999 EASY_POOL_SAMPLES=100 VAL_SAMPLES=50 OUTPUT_TARBALL=orca_$(method)_r$(rank)_s$(seed)_$(Cluster)_$(Process).tar.gz"
 transfer_output_files   = orca_$(method)_r$(rank)_s$(seed)_$(Cluster)_$(Process).tar.gz
 
 +JobBatchName           = orca_gsm8k_rank_sweep
