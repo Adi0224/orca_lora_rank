@@ -64,7 +64,12 @@ EASY_POOL_SAMPLES="${EASY_POOL_SAMPLES:-100}"
 VAL_SAMPLES="${VAL_SAMPLES:-50}"
 
 JOB_TAG="${JOB_TAG:-${METHOD}_r${LORA_RANK}_s${SEED}}"
-OUT="runs/${JOB_TAG}"
+# Store in results/lora/ or results/orca/
+if [[ "${METHOD}" == "lora_only" ]]; then
+  OUT="results/lora/${JOB_TAG}"
+else
+  OUT="results/orca/${JOB_TAG}"
+fi
 OUTPUT_TARBALL="${OUTPUT_TARBALL:-orca_${METHOD}_r${LORA_RANK}_s${SEED}.tar.gz}"
 mkdir -p "${OUT}"
 
