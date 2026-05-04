@@ -27,7 +27,7 @@ class PythiaWithAdapter(nn.Module):
 
     def __init__(self, model_name: str, adapter_bottleneck: int = 0, device: str = "cpu"):
         super().__init__()
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, dtype=torch.float32)
+        self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float32)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
