@@ -1,0 +1,28 @@
+# Minimal GPU smoke test — validates packages, CUDA, OTDD, and one short training run.
+# Uses tiny data (20 train, 10 test, 1 epoch) to finish fast.
+# Submit with: condor_submit htcondor/smoke.sub
+
+universe                = vanilla
+executable              = htcondor/run_job.sh
+
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+getenv                  = True
+
+request_cpus            = 2
+request_gpus            = 1
+request_memory          = 16 GB
+request_disk            = 40 GB
+
+transfer_input_files    = venv.tar.gz,code.tar.gz
+
+environment             = "METHOD=orca_otdd LORA_RANK=4 SEED=0 EMBED_EP=2 LORA_EPOCHS=1 TEST_SAMPLES=5 HARD_TRAIN_SAMPLES=20 EASY_POOL_SAMPLES=20 VAL_SAMPLES=5 OUTPUT_TARBALL=smoke_$(Cluster)_$(Process).tar.gz"
+transfer_output_files   = smoke_$(Cluster)_$(Process).tar.gz
+
++JobBatchName           = orca_gpu_smoke
+
+log     = htcondor_logs/smoke.$(Cluster).$(Process).log
+output  = htcondor_logs/smoke.$(Cluster).$(Process).out
+error   = htcondor_logs/smoke.$(Cluster).$(Process).err
+
+queue 1

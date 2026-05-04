@@ -59,6 +59,9 @@ SEED="${SEED:-0}"
 EMBED_EP="${EMBED_EP:-45}"
 LORA_EPOCHS="${LORA_EPOCHS:-10}"
 TEST_SAMPLES="${TEST_SAMPLES:-0}"
+HARD_TRAIN_SAMPLES="${HARD_TRAIN_SAMPLES:-200}"
+EASY_POOL_SAMPLES="${EASY_POOL_SAMPLES:-100}"
+VAL_SAMPLES="${VAL_SAMPLES:-50}"
 
 JOB_TAG="${JOB_TAG:-${METHOD}_r${LORA_RANK}_s${SEED}}"
 OUT="runs/${JOB_TAG}"
@@ -75,6 +78,9 @@ python run.py \
   --embedder_epochs "${EMBED_EP}" \
   --lora_epochs "${LORA_EPOCHS}" \
   --test_samples "${TEST_SAMPLES}" \
+  --hard_train_samples "${HARD_TRAIN_SAMPLES}" \
+  --easy_pool_samples "${EASY_POOL_SAMPLES}" \
+  --val_samples "${VAL_SAMPLES}" \
   --output_dir "${OUT}" \
   --no-verbose \
   --device cuda
