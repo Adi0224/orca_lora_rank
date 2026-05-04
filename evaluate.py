@@ -1,6 +1,9 @@
 import re
 import torch
-from data import extract_gold
+import torch.nn.functional as F
+from functools import partial
+from torch.utils.data import DataLoader
+from data import extract_gold, LMDataset, collate_fn
 
 
 def extract_prediction(text: str):
@@ -82,3 +85,35 @@ def evaluate_em(model, examples: list, tokenizer, device, max_new_tokens: int = 
         "total": total,
         "predictions": predictions,
     }
+
+
+def evaluate_ce_loss(model, examples: list, tokenizer, device, max_length: int = 256):
+    """
+    Compute test cross-entropy loss (teacher-forced, same as training loss but on test data).
+    """
+    model.eval()
+    dataset = LMDataset(examples, tokenizer, max_length)
+    loader = DataLoader(
+        dataset,
+        batch_size=4,
+        shuffle=False,
+        collate_fn=partial(collate_fn, pad_token_id=tokenizer.pad_token_id),
+    )
+
+    total_loss = 0.0
+    total_tokens = 0
+
+    with torch.no_grad():
+        for batch in loader:
+            input_ids = batch["input_ids"].to(device)
+            attention_mask = batch["attention_mask"].to(device)
+            labels = batch["labels"].to(device)
+
+            outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
+            # Count non-masked tokens
+            n_tokens = (labels != -100).sum().item()
+            total_loss += outputs.loss.item() * n_tokens
+            total_tokens += n_tokens
+
+    avg_loss = total_loss / max(total_tokens, 1)
+    return {"ce_loss": avg_loss, "total_tokens": total_tokens}

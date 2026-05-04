@@ -21,7 +21,7 @@ from data import make_splits
 from model import load_model, attach_lora
 from stage_a import run_stage_a
 from stage_b import run_stage_b
-from evaluate import evaluate_em
+from evaluate import evaluate_em, evaluate_ce_loss
 
 
 def resolve_device(cfg):
@@ -145,13 +145,16 @@ def main():
     if cfg.verbose:
         print("\n=== Test Evaluation ===")
     test_result = evaluate_em(model, test_data, tokenizer, device)
+    test_ce = evaluate_ce_loss(model, test_data, tokenizer, device, cfg.max_length)
     metrics["test_em"] = test_result["accuracy"]
     metrics["test_correct"] = test_result["correct"]
     metrics["test_total"] = test_result["total"]
+    metrics["test_ce_loss"] = test_ce["ce_loss"]
     metrics["test_predictions"] = test_result["predictions"]
 
     if cfg.verbose:
         print(f"  Test EM: {test_result['correct']}/{test_result['total']} = {test_result['accuracy']:.4f}")
+        print(f"  Test CE Loss: {test_ce['ce_loss']:.4f}")
         # Print a few sample generations
         print("\n  Sample predictions:")
         for pred in test_result["predictions"][:3]:
