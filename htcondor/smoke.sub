@@ -16,7 +16,7 @@ request_disk            = 40 GB
 
 transfer_input_files    = venv.tar.gz,code.tar.gz
 
-environment             = "METHOD=orca_otdd LORA_RANK=4 SEED=0 EMBED_EP=2 LORA_EPOCHS=1 TEST_SAMPLES=5 HARD_TRAIN_SAMPLES=20 EASY_POOL_SAMPLES=20 VAL_SAMPLES=5 OUTPUT_TARBALL=smoke_$(Cluster)_$(Process).tar.gz"
+environment             = "METHOD=orca_otdd LORA_RANK=4 SEED=0 EMBED_EP=2 LORA_EPOCHS=1 TEST_SAMPLES=5 HARD_TRAIN_SAMPLES=20 EASY_POOL_SAMPLES=20 VAL_SAMPLES=5 JOB_TAG=smoke_test OUTPUT_TARBALL=smoke_$(Cluster)_$(Process).tar.gz"
 transfer_output_files   = smoke_$(Cluster)_$(Process).tar.gz
 
 +JobBatchName           = orca_gpu_smoke
