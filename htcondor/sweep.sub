@@ -1,0 +1,47 @@
+# Rank sweep with multiple seeds: lora_only and orca_otdd at ranks 4, 8, 16
+# 3 seeds per config = 18 jobs total (2 methods × 3 ranks × 3 seeds)
+# Submit with: condor_submit htcondor/sweep.sub
+
+universe                = vanilla
+executable              = htcondor/run_job.sh
+
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+getenv                  = True
+
+request_cpus            = 2
+request_gpus            = 1
+request_memory          = 16 GB
+request_disk            = 40 GB
+
+transfer_input_files    = venv.tar.gz,code.tar.gz
+
+environment             = "METHOD=$(method) LORA_RANK=$(rank) SEED=$(seed) EMBED_EP=45 LORA_EPOCHS=10 TEST_SAMPLES=0 OUTPUT_TARBALL=orca_$(method)_r$(rank)_s$(seed)_$(Cluster)_$(Process).tar.gz"
+transfer_output_files   = orca_$(method)_r$(rank)_s$(seed)_$(Cluster)_$(Process).tar.gz
+
++JobBatchName           = orca_gsm8k_rank_sweep
+
+log     = htcondor_logs/$(Cluster).$(Process).log
+output  = htcondor_logs/$(Cluster).$(Process).out
+error   = htcondor_logs/$(Cluster).$(Process).err
+
+queue method,rank,seed from (
+  lora_only,4,0
+  lora_only,4,1
+  lora_only,4,2
+  lora_only,8,0
+  lora_only,8,1
+  lora_only,8,2
+  lora_only,16,0
+  lora_only,16,1
+  lora_only,16,2
+  orca_otdd,4,0
+  orca_otdd,4,1
+  orca_otdd,4,2
+  orca_otdd,8,0
+  orca_otdd,8,1
+  orca_otdd,8,2
+  orca_otdd,16,0
+  orca_otdd,16,1
+  orca_otdd,16,2
+)

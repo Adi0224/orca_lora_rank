@@ -1,0 +1,9 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+runs/
+hf_cache/
+*.tar.gz
+htcondor_logs/
+.DS_Store

@@ -1,0 +1,11 @@
+torch
+transformers>=4.38
+peft>=0.11
+datasets>=2.18
+accelerate>=0.27
+safetensors
+pot
+geomloss
+scipy
+scikit-learn
+numpy
