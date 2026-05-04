@@ -1,0 +1,61 @@
+# Ablation studies: orca_otdd only, rank=8, seed=0, 30 epochs
+# 3 ablations × 2 non-default values each = 6 jobs
+# Submit with: condor_submit htcondor/ablations.sub
+#
+# Results structure:
+#   results/ablations/embed_ep5/orca_otdd_r8_s0/metrics.json
+#   results/ablations/embed_ep15/orca_otdd_r8_s0/metrics.json
+#   results/ablations/bottleneck_64/orca_otdd_r8_s0/metrics.json
+#   results/ablations/bottleneck_256/orca_otdd_r8_s0/metrics.json
+#   results/ablations/easy_pool_50/orca_otdd_r8_s0/metrics.json
+#   results/ablations/easy_pool_200/orca_otdd_r8_s0/metrics.json
+#
+# Baselines (from main sweep):
+#   results/orca/orca_otdd_r8_s0/metrics.json  (embed_ep=45, bottleneck=128, easy_pool=100)
+
+universe                = vanilla
+executable              = htcondor/run_job.sh
+
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+getenv                  = True
+
+request_cpus            = 2
+request_gpus            = 1
+request_memory          = 16 GB
+request_disk            = 40 GB
+
+transfer_input_files    = venv.tar.gz,code.tar.gz
+
++JobBatchName           = orca_gsm8k_ablations
+
+log     = htcondor_logs/$(Cluster).$(Process).log
+output  = htcondor_logs/$(Cluster).$(Process).out
+error   = htcondor_logs/$(Cluster).$(Process).err
+
+# --- Ablation 1: Embedder epochs (5, 15) — baseline is 45 in main sweep ---
+environment             = "METHOD=orca_otdd LORA_RANK=8 SEED=0 EMBED_EP=5 LORA_EPOCHS=30 TEST_SAMPLES=0 HARD_TRAIN_SAMPLES=99999 EASY_POOL_SAMPLES=100 VAL_SAMPLES=50 ADAPTER_BOTTLENECK=128 ABLATION=embed_ep5 OUTPUT_TARBALL=ablation_embed_ep5_$(Cluster)_$(Process).tar.gz"
+transfer_output_files   = ablation_embed_ep5_$(Cluster)_$(Process).tar.gz
+queue 1
+
+environment             = "METHOD=orca_otdd LORA_RANK=8 SEED=0 EMBED_EP=15 LORA_EPOCHS=30 TEST_SAMPLES=0 HARD_TRAIN_SAMPLES=99999 EASY_POOL_SAMPLES=100 VAL_SAMPLES=50 ADAPTER_BOTTLENECK=128 ABLATION=embed_ep15 OUTPUT_TARBALL=ablation_embed_ep15_$(Cluster)_$(Process).tar.gz"
+transfer_output_files   = ablation_embed_ep15_$(Cluster)_$(Process).tar.gz
+queue 1
+
+# --- Ablation 2: Adapter bottleneck (64, 256) — baseline is 128 in main sweep ---
+environment             = "METHOD=orca_otdd LORA_RANK=8 SEED=0 EMBED_EP=45 LORA_EPOCHS=30 TEST_SAMPLES=0 HARD_TRAIN_SAMPLES=99999 EASY_POOL_SAMPLES=100 VAL_SAMPLES=50 ADAPTER_BOTTLENECK=64 ABLATION=bottleneck_64 OUTPUT_TARBALL=ablation_bottleneck_64_$(Cluster)_$(Process).tar.gz"
+transfer_output_files   = ablation_bottleneck_64_$(Cluster)_$(Process).tar.gz
+queue 1
+
+environment             = "METHOD=orca_otdd LORA_RANK=8 SEED=0 EMBED_EP=45 LORA_EPOCHS=30 TEST_SAMPLES=0 HARD_TRAIN_SAMPLES=99999 EASY_POOL_SAMPLES=100 VAL_SAMPLES=50 ADAPTER_BOTTLENECK=256 ABLATION=bottleneck_256 OUTPUT_TARBALL=ablation_bottleneck_256_$(Cluster)_$(Process).tar.gz"
+transfer_output_files   = ablation_bottleneck_256_$(Cluster)_$(Process).tar.gz
+queue 1
+
+# --- Ablation 3: Easy pool size (50, 200) — baseline is 100 in main sweep ---
+environment             = "METHOD=orca_otdd LORA_RANK=8 SEED=0 EMBED_EP=45 LORA_EPOCHS=30 TEST_SAMPLES=0 HARD_TRAIN_SAMPLES=99999 EASY_POOL_SAMPLES=50 VAL_SAMPLES=50 ADAPTER_BOTTLENECK=128 ABLATION=easy_pool_50 OUTPUT_TARBALL=ablation_easy_pool_50_$(Cluster)_$(Process).tar.gz"
+transfer_output_files   = ablation_easy_pool_50_$(Cluster)_$(Process).tar.gz
+queue 1
+
+environment             = "METHOD=orca_otdd LORA_RANK=8 SEED=0 EMBED_EP=45 LORA_EPOCHS=30 TEST_SAMPLES=0 HARD_TRAIN_SAMPLES=99999 EASY_POOL_SAMPLES=200 VAL_SAMPLES=50 ADAPTER_BOTTLENECK=128 ABLATION=easy_pool_200 OUTPUT_TARBALL=ablation_easy_pool_200_$(Cluster)_$(Process).tar.gz"
+transfer_output_files   = ablation_easy_pool_200_$(Cluster)_$(Process).tar.gz
+queue 1

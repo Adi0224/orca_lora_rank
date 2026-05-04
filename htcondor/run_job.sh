@@ -57,15 +57,18 @@ METHOD="${METHOD:-lora_only}"
 LORA_RANK="${LORA_RANK:-8}"
 SEED="${SEED:-0}"
 EMBED_EP="${EMBED_EP:-45}"
-LORA_EPOCHS="${LORA_EPOCHS:-10}"
+LORA_EPOCHS="${LORA_EPOCHS:-30}"
 TEST_SAMPLES="${TEST_SAMPLES:-0}"
-HARD_TRAIN_SAMPLES="${HARD_TRAIN_SAMPLES:-200}"
+HARD_TRAIN_SAMPLES="${HARD_TRAIN_SAMPLES:-99999}"
 EASY_POOL_SAMPLES="${EASY_POOL_SAMPLES:-100}"
 VAL_SAMPLES="${VAL_SAMPLES:-50}"
+ADAPTER_BOTTLENECK="${ADAPTER_BOTTLENECK:-128}"
 
 JOB_TAG="${JOB_TAG:-${METHOD}_r${LORA_RANK}_s${SEED}}"
-# Store in results/lora/ or results/orca/
-if [[ "${METHOD}" == "lora_only" ]]; then
+# Store in results/lora/ or results/orca/ or results/ablations/
+if [[ "${ABLATION:-}" != "" ]]; then
+  OUT="results/ablations/${ABLATION}/${JOB_TAG}"
+elif [[ "${METHOD}" == "lora_only" ]]; then
   OUT="results/lora/${JOB_TAG}"
 else
   OUT="results/orca/${JOB_TAG}"
@@ -86,6 +89,7 @@ python run.py \
   --hard_train_samples "${HARD_TRAIN_SAMPLES}" \
   --easy_pool_samples "${EASY_POOL_SAMPLES}" \
   --val_samples "${VAL_SAMPLES}" \
+  --adapter_bottleneck "${ADAPTER_BOTTLENECK}" \
   --output_dir "${OUT}" \
   --no-verbose \
   --device cuda
